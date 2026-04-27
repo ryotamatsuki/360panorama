@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>戦国の湯築城を歩く | 道後公園 時空360</title>
+    <link rel="icon" href="data:," />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"
+    />
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <div>
+          <p class="eyebrow">道後公園 時空360</p>
+          <h1 id="tourTitle">戦国の湯築城を歩く</h1>
+        </div>
+        <div class="header-meta">
+          <span id="routeProgress">1 / 8</span>
+          <span>教育・観光向けプロトタイプ</span>
+        </div>
+      </header>
+
+      <main class="tour-layout">
+        <section class="viewer-section" aria-label="360度ウォークスルー">
+          <div id="panorama" class="viewer-canvas"></div>
+          <div id="viewerFallback" class="viewer-fallback" hidden>
+            <strong>Pannellumを読み込めませんでした。</strong>
+            <span>ネットワーク接続後に再読み込みすると360度viewerが表示されます。</span>
+          </div>
+          <div class="viewer-toolbar" aria-label="viewer controls">
+            <button id="homeBtn" class="icon-button" type="button" title="最初の地点へ戻る">
+              Home
+            </button>
+            <button id="autoRotateBtn" class="icon-button" type="button" aria-pressed="false">
+              自動回転
+            </button>
+            <button id="fullscreenBtn" class="icon-button" type="button">
+              全画面
+            </button>
+          </div>
+        </section>
+
+        <aside class="info-panel" aria-label="現在地情報">
+          <section class="location-card">
+            <p class="eyebrow" id="nodeZone">outer_castle</p>
+            <h2 id="nodeTitle">N01 外堀入口</h2>
+            <p class="subtitle" id="nodeSubtitle">湯築城へ入る起点</p>
+            <p id="nodeDescription"></p>
+            <p class="status-line" id="nodeStatus"></p>
+          </section>
+
+          <nav class="route-actions" aria-label="地点移動">
+            <button id="prevBtn" type="button">前へ</button>
+            <button id="nextBtn" type="button">次へ</button>
+          </nav>
+
+          <section class="node-list-section">
+            <div class="section-heading">
+              <h2>地点一覧</h2>
+              <span id="nodeCount">8地点</span>
+            </div>
+            <div id="nodeList" class="node-list"></div>
+          </section>
+
+          <section class="route-map" aria-label="簡易ルート">
+            <div id="miniMap" class="mini-map"></div>
+          </section>
+
+          <p class="disclaimer" id="disclaimer"></p>
+          <p id="errorBox" class="error-box" role="alert" hidden></p>
+        </aside>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script src="src/tour-data.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
