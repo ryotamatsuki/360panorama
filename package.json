@@ -1,0 +1,12 @@
+{
+  "name": "yuzuki-sengoku-360",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static 360-degree walkthrough prototype for a historically inspired Yuzuki Castle experience.",
+  "scripts": {
+    "serve": "python -m http.server 8000",
+    "check": "node --check src/tour-data.js && node --check src/app.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
