@@ -128,9 +128,31 @@ button {
   position: absolute;
   top: 16px;
   right: 16px;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.control-guide {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 5;
+  margin: 0;
+  max-width: min(560px, calc(100% - 32px));
+  padding: 8px 12px;
+  border: 1px solid rgba(242, 234, 219, 0.2);
+  background: rgba(12, 13, 11, 0.68);
+  box-shadow: var(--shadow);
+  color: #f6ecd9;
+  font-size: 13px;
+  line-height: 1.4;
+  backdrop-filter: blur(6px);
+}
+
+.guide-mobile {
+  display: none;
 }
 
 .icon-button,
@@ -251,6 +273,14 @@ button {
   gap: 8px;
 }
 
+.route-group-heading {
+  margin-top: 6px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
 .node-item {
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
@@ -297,17 +327,38 @@ button {
 
 .mini-map {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 6px;
+  gap: 10px;
   padding: 10px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
 }
 
+.map-group {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(242, 234, 219, 0.12);
+}
+
+.map-group:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.map-group-label {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .map-step {
   aspect-ratio: 1;
   min-width: 0;
+  min-height: 34px;
   padding: 0;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -327,6 +378,105 @@ button {
   border: 1px solid #d05632;
   background: rgba(208, 86, 50, 0.12);
   color: #ffd6c8;
+}
+
+.pnlm-container .streetview-hotspot,
+.pnlm-container .streetview-hotspot::before,
+.pnlm-container .streetview-hotspot::after {
+  box-sizing: border-box;
+}
+
+.pnlm-container .streetview-hotspot {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pnlm-container .streetview-hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(96, 64, 28, 0.75);
+  border-radius: inherit;
+  background: rgba(255, 244, 218, 0.88);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.pnlm-container .streetview-hotspot::before {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  z-index: 1;
+  background: rgba(58, 36, 18, 0.9);
+  clip-path: polygon(
+    50% 0%,
+    100% 70%,
+    64% 70%,
+    64% 100%,
+    36% 100%,
+    36% 70%,
+    0% 70%
+  );
+}
+
+.pnlm-container .streetview-hotspot-forward::before {
+  transform: rotate(0deg);
+}
+
+.pnlm-container .streetview-hotspot-back {
+  opacity: 0.82;
+}
+
+.pnlm-container .streetview-hotspot-back::before {
+  transform: rotate(180deg);
+}
+
+.pnlm-container .streetview-hotspot-back::after {
+  background: rgba(226, 213, 188, 0.76);
+}
+
+.pnlm-container .streetview-hotspot:hover::after,
+.pnlm-container .streetview-hotspot:focus-visible::after {
+  background: rgba(255, 248, 230, 0.98);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.42);
+  transform: scale(1.08);
+}
+
+.pnlm-container div.pnlm-tooltip.streetview-hotspot span {
+  width: max-content !important;
+  max-width: 160px;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  padding: 5px 9px;
+  border: 1px solid rgba(242, 234, 219, 0.2);
+  border-radius: 6px;
+  background: rgba(22, 18, 14, 0.86);
+  color: #fff7e6;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    "Yu Gothic",
+    "Yu Gothic UI",
+    sans-serif;
+  font-size: 12px;
+  line-height: 1.35;
+  pointer-events: none;
+  transform: translate(-50%, -116%);
+  white-space: nowrap;
+}
+
+.pnlm-container div.pnlm-tooltip.streetview-hotspot:hover span::after {
+  left: 50%;
+  margin: 0 0 0 -10px;
+  border-color: rgba(22, 18, 14, 0.86) transparent transparent transparent;
 }
 
 @media (max-width: 900px) {
@@ -366,6 +516,22 @@ button {
     justify-content: flex-end;
   }
 
+  .control-guide {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-width: none;
+    font-size: 12px;
+  }
+
+  .guide-desktop {
+    display: none;
+  }
+
+  .guide-mobile {
+    display: inline;
+  }
+
   .icon-button {
     min-height: 34px;
     padding: 7px 9px;
@@ -380,7 +546,7 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .mini-map {
-    grid-template-columns: repeat(4, 1fr);
+  .map-group {
+    gap: 5px;
   }
 }

@@ -1,10 +1,10 @@
 # 戦国の湯築城を歩く
 
-道後公園・湯築城跡を題材にした、戦国期イメージの360度ウォークスルー静的Webアプリです。Pannellumを使い、8地点の2:1 equirectangular panoramaをつないで、外堀、大手門、土塁、武家屋敷、見張り場、高台の眺望を歩く体験として構成しています。
+道後公園・湯築城跡を題材にした、24地点の360度パノラマウォークスルー静的Webアプリです。Pannellumのtour機能を使い、各地点の前後ホットスポットから隣接地点へ移動できます。
 
-本コンテンツは歴史的イメージ再現です。厳密な史実復元・考古学的復元を示すものではなく、教育・観光・展示用途を想定したプロトタイプです。
+本アプリは、Googleストリートビューのように任意位置を自由移動するものではありません。事前定義された24地点の360度パノラマ画像を、前後のホットスポットで移動する簡易ストリートビュー型ウォークスルーです。
 
-## ローカル確認方法
+## ローカル確認
 
 プロジェクト直下でローカルサーバーを起動します。
 
@@ -24,44 +24,74 @@ py -m http.server 8000
 http://127.0.0.1:8000/
 ```
 
-- `index.html` を直接ダブルクリックするのではなく、ローカルサーバー経由で確認してください。
-- サーバー起動中のターミナルを閉じると表示できなくなります。
-- GitHub Pages公開時はGitHubが静的ファイルを配信するため、Pythonサーバーは不要です。
+`index.html` を直接ダブルクリックするのではなく、ローカルサーバー経由で確認してください。
 
-## GitHub Pages公開方法
+## 操作
 
-1. GitHubにリポジトリを作成する
-2. このプロジェクト一式をpushする
-3. GitHubリポジトリの Settings を開く
-4. Pages を開く
-5. Source を Deploy from a branch にする
-6. Branch を main、folder を /root にする
-7. Save を押す
-8. 数十秒から数分後に以下の形式のURLで公開される
+- ドラッグ: 360度パノラマを見回す
+- 前方ホットスポット: 次地点へ進む
+- 後方ホットスポット: 前地点へ戻る
+- `ArrowUp` / `W` / `ArrowRight`: 次地点へ進む
+- `ArrowDown` / `S` / `ArrowLeft`: 前地点へ戻る
+- `Home`: N001へ戻る
+- `End`: N024へ移動
+- 右側の地点一覧・ルートインジケータ: 任意地点へジャンプ
+
+## ルート
 
 ```text
-https://<GitHubユーザー名>.github.io/<リポジトリ名>/
+N001 外堀入口
+↓
+N002 堀端の小道
+↓
+N003 木橋手前
+↓
+N004 木橋上
+↓
+N005 大手門前
+↓
+N006 門番の脇
+↓
+N007 大手門内側
+↓
+N008 土塁沿い入口
+↓
+N009 土塁沿い前半
+↓
+N010 木柵沿い
+↓
+N011 堀を見下ろす地点
+↓
+N012 城内広場手前
+↓
+N013 城内広場
+↓
+N014 井戸前
+↓
+N015 物資置場
+↓
+N016 厩・馬留め
+↓
+N017 武家屋敷通り入口
+↓
+N018 屋敷門前
+↓
+N019 屋敷の庭
+↓
+N020 縁側
+↓
+N021 詰所前
+↓
+N022 見張り台
+↓
+N023 高台への坂
+↓
+N024 城内眺望
 ```
 
-## GitHub Pages向け注意事項
+## Pannellum
 
-- CSS、JS、画像は相対パスで読み込んでください。
-- 先頭スラッシュ付きの `/assets/...`、`/src/...`、`/vendor/...` はGitHub Pagesのプロジェクトページで壊れやすいため使わないでください。
-- 現在の8地点版では、`assets/panos/` と `assets/thumbs/` はGit管理対象に含めます。
-- `assets/reference/` は本番360パノラマではなく、作風・建築様式・人物配置・色調の参照画像です。
-- 将来的に数百から数千枚のパノラマ画像に増える場合は、Git LFSまたは外部ストレージ管理を検討してください。
-- PannellumをCDNで使う場合、GitHub Pagesでは通常動作しますが、制限ネットワークでは読み込めない可能性があります。
-
-## Pannellumの読み込み
-
-現在の `index.html` はPannellumをCDNから読み込んでいます。
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
-<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
-```
-
-CDN利用のままGitHub Pagesで公開できます。オフライン配布や制限ネットワーク対応が必要になった場合だけ、`vendor/pannellum/` にPannellum本体を置いてローカル読み込みへ切り替えてください。
+Pannellumは `vendor/pannellum/` から相対パスで読み込みます。CDNに依存しないため、GitHub Pagesでも外部ネットワーク制限の影響を受けにくい構成です。
 
 ```text
 vendor/pannellum/
@@ -69,29 +99,44 @@ vendor/pannellum/
   pannellum.js
 ```
 
-ローカル配置後は `index.html` の読み込みを以下の相対パスへ差し替えます。
+## GitHub Pages公開
 
-```html
-<link rel="stylesheet" href="vendor/pannellum/pannellum.css">
-<script src="vendor/pannellum/pannellum.js"></script>
+1. このプロジェクト一式をGitHubへpushする
+2. リポジトリの Settings > Pages を開く
+3. Source を `Deploy from a branch` にする
+4. Branch を `main`、Folder を `/root` にする
+5. Saveする
+
+公開URLは以下の形式です。
+
+```text
+https://<user>.github.io/<repo>/
 ```
+
+GitHub Pages向けの注意点:
+
+- CSS、JS、画像、Pannellumはすべて相対パスで読み込んでいます。
+- `/assets/...` や `/src/...` のような先頭スラッシュ付きパスは使わないでください。
+- `.nojekyll` を残してください。
+- 本番画像を増やす場合、画像サイズが大きくなりすぎるならGit LFSなどの運用を検討してください。
 
 ## 画像と角度調整
 
-Pannellum用画像の推奨条件は以下です。
+現在の24地点は、既存の8枚のプロトタイプパノラマ画像を複数地点で共有しています。本番用の24枚に差し替える場合は、`src/tour-data.js` の各地点の `image` / `thumb` を差し替えてください。
 
-- 形式: WebP、PNG、JPEG
-- アスペクト比: 2:1
-- 推奨サイズ: 4096 x 2048 または 2048 x 1024
-- 投影形式: equirectangular panorama
+本番パノラマ画像を差し替えた後は、各地点の hotSpot の yaw / pitch / targetYaw / targetPitch を実際の画像に合わせて調整してください。
 
-本番パノラマ画像を差し替えた後は、画像内の進行方向や見せたい対象物に合わせて `src/tour-data.js` の `initialYaw`、`initialPitch`、各リンクの `yaw`、`pitch` を必ず再調整してください。
+- `yaw`: 現在地点でホットスポットを表示する左右方向
+- `pitch`: 現在地点でホットスポットを表示する上下方向
+- `targetYaw`: 移動先地点で最初に向く左右方向
+- `targetPitch`: 移動先地点で最初に向く上下方向
+
+詳しい調整手順は [docs/route-design.md](docs/route-design.md) を参照してください。
 
 ## ファイル構成
 
 ```text
 yuzuki-sengoku-360/
-  .gitignore
   .nojekyll
   index.html
   package.json
@@ -108,6 +153,8 @@ yuzuki-sengoku-360/
     historical-framing.md
     image-prompts.md
     route-design.md
+  vendor/
+    pannellum/
+      pannellum.css
+      pannellum.js
 ```
-
-`vendor/pannellum/` は、ローカルPannellumを使う場合のみ本体ファイルをGit管理対象に含めてください。現在はCDN利用のため、本体ファイルは不要です。
