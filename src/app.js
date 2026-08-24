@@ -6,7 +6,9 @@
     currentNodeId: tour ? tour.startNode : null,
     viewer: null,
     isFallback: false,
-    autoRotate: false
+    autoRotate: false,
+    orientationActive: false,
+    orientationStarting: false
   };
 
   const els = {
@@ -15,6 +17,7 @@
     panorama: document.getElementById("panorama"),
     fallback: document.getElementById("viewerFallback"),
     homeBtn: document.getElementById("homeBtn"),
+    orientationBtn: document.getElementById("orientationBtn"),
     autoRotateBtn: document.getElementById("autoRotateBtn"),
     fullscreenBtn: document.getElementById("fullscreenBtn"),
     nodeZone: document.getElementById("nodeZone"),
@@ -115,6 +118,8 @@
       state.viewer.on("scenechange", (sceneId) => {
         loadNode(sceneId, { fromSceneEvent: true });
       });
+
+      setupOrientationControl();
     } catch (error) {
       state.isFallback = true;
       els.panorama.classList.add("is-fallback");
@@ -166,6 +171,7 @@
     els.prevBtn.addEventListener("click", goBack);
     els.nextBtn.addEventListener("click", goForward);
     els.homeBtn.addEventListener("click", () => loadNode(tour.startNode));
+    els.orientationBtn?.addEventListener("click", toggleOrientation);
     els.fullscreenBtn.addEventListener("click", toggleFullscreen);
     els.autoRotateBtn.addEventListener("click", toggleAutoRotate);
 
@@ -193,6 +199,138 @@
       },
       true
     );
+  }
+
+  function setupOrientationControl() {
+    if (!els.orientationBtn || !state.viewer || !isMobileOrientationCandidate()) {
+      return;
+    }
+
+    const supported = state.viewer.isOrientationSupported
+      ? state.viewer.isOrientationSupported()
+      : true;
+
+    if (!supported) {
+      return;
+    }
+
+    els.orientationBtn.hidden = false;
+    updateOrientationButton(false);
+
+    if (!requiresOrientationPermissionGesture()) {
+      window.setTimeout(() => {
+        startOrientation({ silent: true });
+      }, 250);
+    }
+  }
+
+  function isMobileOrientationCandidate() {
+    const ua = navigator.userAgent || "";
+    const isMobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    const isTouchMac = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+    return Boolean(window.DeviceOrientationEvent) && (isMobileUA || isTouchMac);
+  }
+
+  function requiresOrientationPermissionGesture() {
+    return Boolean(
+      window.DeviceMotionEvent &&
+        typeof window.DeviceMotionEvent.requestPermission === "function"
+    );
+  }
+
+  async function toggleOrientation() {
+    if (!state.viewer || state.orientationStarting) {
+      return;
+    }
+
+    if (isViewerOrientationActive()) {
+      stopOrientation();
+      return;
+    }
+
+    await startOrientation({ silent: false });
+  }
+
+  async function startOrientation({ silent }) {
+    if (!state.viewer || state.orientationStarting) {
+      return;
+    }
+
+    state.orientationStarting = true;
+    els.orientationBtn.disabled = true;
+    els.orientationBtn.textContent = requiresOrientationPermissionGesture()
+      ? "スマホ連動 許可待ち…"
+      : "スマホ連動 起動中…";
+
+    if (state.autoRotate) {
+      state.viewer.stopAutoRotate();
+      state.autoRotate = false;
+      updateAutoRotateButton();
+    }
+
+    try {
+      state.viewer.startOrientation();
+      const active = await waitForOrientationActive();
+      state.orientationActive = active;
+      updateOrientationButton(active);
+
+      if (!active && !silent) {
+        showError(
+          "スマホ連動を開始できませんでした。iPhone / iPadではモーションと画面の向きへのアクセスを許可してから、もう一度「スマホ連動」を押してください。"
+        );
+      } else if (active) {
+        clearError();
+      }
+    } catch (error) {
+      state.orientationActive = false;
+      updateOrientationButton(false);
+      if (!silent) {
+        showError(`スマホ連動の開始に失敗しました: ${error.message || error}`);
+      }
+    } finally {
+      state.orientationStarting = false;
+      els.orientationBtn.disabled = false;
+    }
+  }
+
+  function waitForOrientationActive() {
+    return new Promise((resolve) => {
+      let checks = 0;
+      const maxChecks = 24;
+
+      const timer = window.setInterval(() => {
+        checks += 1;
+        if (isViewerOrientationActive()) {
+          window.clearInterval(timer);
+          resolve(true);
+        } else if (checks >= maxChecks) {
+          window.clearInterval(timer);
+          resolve(false);
+        }
+      }, 100);
+    });
+  }
+
+  function isViewerOrientationActive() {
+    if (!state.viewer?.isOrientationActive) {
+      return state.orientationActive;
+    }
+    return Boolean(state.viewer.isOrientationActive());
+  }
+
+  function stopOrientation() {
+    state.viewer?.stopOrientation?.();
+    state.orientationActive = false;
+    updateOrientationButton(false);
+  }
+
+  function updateOrientationButton(active) {
+    if (!els.orientationBtn) {
+      return;
+    }
+    els.orientationBtn.setAttribute("aria-pressed", String(active));
+    els.orientationBtn.classList.toggle("is-active", active);
+    els.orientationBtn.textContent = active ? "スマホ連動 ON" : "スマホ連動";
   }
 
   function renderNodeList() {
@@ -278,7 +416,7 @@
 
       if (activeScene !== node.id) {
         state.viewer.loadScene(node.id, orientation.pitch, orientation.yaw);
-      } else if (state.viewer.lookAt) {
+      } else if (state.viewer.lookAt && !isViewerOrientationActive()) {
         state.viewer.lookAt(orientation.pitch, orientation.yaw, undefined, 500);
       }
     }
@@ -414,16 +552,23 @@
     }
   }
 
-  function toggleAutoRotate() {
-    state.autoRotate = !state.autoRotate;
+  function updateAutoRotateButton() {
     els.autoRotateBtn.setAttribute("aria-pressed", String(state.autoRotate));
     els.autoRotateBtn.classList.toggle("is-active", state.autoRotate);
+  }
+
+  function toggleAutoRotate() {
+    state.autoRotate = !state.autoRotate;
+    updateAutoRotateButton();
 
     if (!state.viewer) {
       return;
     }
 
     if (state.autoRotate) {
+      if (isViewerOrientationActive()) {
+        stopOrientation();
+      }
       state.viewer.startAutoRotate(-2);
     } else {
       state.viewer.stopAutoRotate();
