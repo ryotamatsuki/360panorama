@@ -31,8 +31,11 @@ jobs:
           test -f src/app.js
           test -f src/style.css
           test -f src/tour-data.js
-          test -f vendor/pannellum/pannellum.js
-          test -f vendor/pannellum/pannellum.css
+          test -f assets/pannellum/pannellum.js
+          test -f assets/pannellum/pannellum.css
+          grep -q 'window.pannellum=' assets/pannellum/pannellum.js
+          grep -q 'assets/pannellum/pannellum.js' index.html
+          grep -q 'assets/pannellum/pannellum.css' index.html
 
       - name: Verify tour image references
         run: |
