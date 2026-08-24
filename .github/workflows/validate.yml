@@ -30,12 +30,20 @@ jobs:
           test -f .nojekyll
           test -f src/app.js
           test -f src/style.css
+          test -f src/orientation.css
           test -f src/tour-data.js
           test -f assets/pannellum/pannellum.js
           test -f assets/pannellum/pannellum.css
           grep -q 'window.pannellum=' assets/pannellum/pannellum.js
           grep -q 'assets/pannellum/pannellum.js' index.html
           grep -q 'assets/pannellum/pannellum.css' index.html
+          grep -q 'src/orientation.css' index.html
+          grep -Fq 'id="orientationBtn"' index.html
+          grep -Fq 'startOrientation' src/app.js
+          grep -Fq 'isOrientationSupported' src/app.js
+          grep -Fq 'isOrientationActive' src/app.js
+          grep -Fq 'requestPermission' src/app.js
+          grep -Fq '.pnlm-orientation-button' src/orientation.css
           grep -Fq '.viewer-fallback[hidden]' src/style.css
           grep -Fq 'display: none !important;' src/style.css
 
@@ -46,8 +54,10 @@ jobs:
           trap 'kill "$server_pid"' EXIT
           sleep 1
           curl --fail --silent http://127.0.0.1:8000/ | grep -q 'assets/pannellum/pannellum.js'
+          curl --fail --silent http://127.0.0.1:8000/ | grep -q 'orientationBtn'
           curl --fail --silent http://127.0.0.1:8000/assets/pannellum/pannellum.js | grep -q 'window.pannellum='
           curl --fail --silent --output /dev/null http://127.0.0.1:8000/assets/pannellum/pannellum.css
+          curl --fail --silent --output /dev/null http://127.0.0.1:8000/src/orientation.css
 
       - name: Verify tour image references
         run: |
