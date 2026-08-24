@@ -7,6 +7,7 @@
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="assets/pannellum/pannellum.css" />
     <link rel="stylesheet" href="src/style.css" />
+    <link rel="stylesheet" href="src/orientation.css" />
   </head>
   <body>
     <div class="app-shell">
@@ -30,11 +31,21 @@
           </div>
           <p class="control-guide" aria-label="操作ガイド">
             <span class="guide-desktop">ドラッグで見回す ／ 矢印で移動 ／ W・Sで前後移動</span>
-            <span class="guide-mobile">ドラッグで見回す・矢印で移動</span>
+            <span class="guide-mobile">端末を動かして見回す ／ ドラッグでも操作</span>
           </p>
           <div class="viewer-toolbar" aria-label="viewer controls">
             <button id="homeBtn" class="icon-button" type="button" title="最初の地点へ戻る">
               Home
+            </button>
+            <button
+              id="orientationBtn"
+              class="icon-button orientation-button"
+              type="button"
+              aria-pressed="false"
+              title="スマートフォンの向きに360度ビューを連動"
+              hidden
+            >
+              スマホ連動
             </button>
             <button id="autoRotateBtn" class="icon-button" type="button" aria-pressed="false">
               自動回転
