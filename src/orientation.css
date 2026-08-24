@@ -1,0 +1,21 @@
+/* Mobile device-orientation UI layered on top of Pannellum. */
+
+.orientation-button[hidden] {
+  display: none !important;
+}
+
+.orientation-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Use the labelled app control instead of Pannellum's small built-in icon. */
+.pnlm-container .pnlm-orientation-button {
+  display: none !important;
+}
+
+@media (max-width: 540px) {
+  .orientation-button {
+    font-weight: 700;
+  }
+}
