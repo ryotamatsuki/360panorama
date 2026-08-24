@@ -483,6 +483,24 @@ button {
   border-color: rgba(22, 18, 14, 0.86) transparent transparent transparent;
 }
 
+/* Keep the desktop viewer locked to the viewport while the details panel scrolls independently. */
+@media (min-width: 901px) {
+  .app-shell {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .tour-layout {
+    min-height: 0;
+  }
+
+  .viewer-section,
+  .viewer-canvas,
+  .info-panel {
+    min-height: 0;
+  }
+}
+
 @media (max-width: 900px) {
   .site-header {
     align-items: flex-start;
