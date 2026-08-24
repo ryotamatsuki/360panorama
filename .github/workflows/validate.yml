@@ -1,0 +1,53 @@
+name: Static validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: npm run check
+
+      - name: Verify required static files
+        run: |
+          test -f index.html
+          test -f .nojekyll
+          test -f src/app.js
+          test -f src/style.css
+          test -f src/tour-data.js
+          test -f vendor/pannellum/pannellum.js
+          test -f vendor/pannellum/pannellum.css
+
+      - name: Verify tour image references
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const source = fs.readFileSync('src/tour-data.js', 'utf8');
+          const refs = [...source.matchAll(/(?:image|thumb):\s*"([^"]+)"/g)].map((match) => match[1]);
+          const uniqueRefs = [...new Set(refs)];
+          const missing = uniqueRefs.filter((path) => !fs.existsSync(path));
+
+          if (missing.length > 0) {
+            console.error('Missing referenced assets:');
+            for (const path of missing) console.error(`- ${path}`);
+            process.exit(1);
+          }
+
+          console.log(`Verified ${uniqueRefs.length} referenced panorama/thumbnail assets.`);
+          NODE
