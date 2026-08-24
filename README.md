@@ -1,8 +1,20 @@
-# 戦国の湯築城を歩く
+# 戦国の湯築城を歩く — 道後公園 時空360
 
-道後公園・湯築城跡を題材にした、24地点の360度パノラマウォークスルー静的Webアプリです。Pannellumのtour機能を使い、各地点の前後ホットスポットから隣接地点へ移動できます。
+道後公園・湯築城跡を題材にした、24地点の360度パノラマウォークスルー静的Webアプリです。Pannellumのtour機能を使い、前後のホットスポットや地点一覧からルート内を移動できます。
 
-本アプリは、Googleストリートビューのように任意位置を自由移動するものではありません。事前定義された24地点の360度パノラマ画像を、前後のホットスポットで移動する簡易ストリートビュー型ウォークスルーです。
+GitHub Pages: https://ryotamatsuki.github.io/360panorama/
+
+> 本コンテンツは、道後公園・湯築城跡を題材とした歴史的イメージ再現です。厳密な史実復元・考古学的復元を示すものではなく、教育・観光・展示用途を想定した体験型プロトタイプです。
+
+## 現在の構成
+
+- 24地点（N001〜N024）のデータ駆動型ツアー
+- Pannellumを`vendor/pannellum/`から読み込む静的構成
+- HTML / CSS / JavaScriptのみで動作し、ビルド工程は不要
+- GitHub Pagesで公開可能
+- 現在のパノラマ素材は、共通のプロトタイプWebPと地点別PNGが混在する移行段階
+
+本アプリはGoogleストリートビューのような任意位置の連続移動ではなく、事前定義された24地点を接続する簡易ストリートビュー型ウォークスルーです。
 
 ## ローカル確認
 
@@ -24,7 +36,21 @@ py -m http.server 8000
 http://127.0.0.1:8000/
 ```
 
-`index.html` を直接ダブルクリックするのではなく、ローカルサーバー経由で確認してください。
+`index.html`を直接ダブルクリックするのではなく、ローカルサーバー経由で確認してください。
+
+## QA
+
+JavaScriptの構文確認は以下で実行できます。
+
+```bash
+npm run check
+```
+
+Pull Requestと`main`へのpushでは、GitHub Actionsが以下を自動確認します。
+
+- `src/tour-data.js` / `src/app.js` の構文
+- 必須静的ファイルの存在
+- `tour-data.js`から参照されるパノラマ画像・サムネイルの存在
 
 ## 操作
 
@@ -35,108 +61,31 @@ http://127.0.0.1:8000/
 - `ArrowDown` / `S` / `ArrowLeft`: 前地点へ戻る
 - `Home`: N001へ戻る
 - `End`: N024へ移動
-- 右側の地点一覧・ルートインジケータ: 任意地点へジャンプ
+- 地点一覧・ルートインジケータ: 任意地点へジャンプ
 
-## ルート
+## リポジトリ運用
 
-```text
-N001 外堀入口
-↓
-N002 堀端の小道
-↓
-N003 木橋手前
-↓
-N004 木橋上
-↓
-N005 大手門前
-↓
-N006 門番の脇
-↓
-N007 大手門内側
-↓
-N008 土塁沿い入口
-↓
-N009 土塁沿い前半
-↓
-N010 木柵沿い
-↓
-N011 堀を見下ろす地点
-↓
-N012 城内広場手前
-↓
-N013 城内広場
-↓
-N014 井戸前
-↓
-N015 物資置場
-↓
-N016 厩・馬留め
-↓
-N017 武家屋敷通り入口
-↓
-N018 屋敷門前
-↓
-N019 屋敷の庭
-↓
-N020 縁側
-↓
-N021 詰所前
-↓
-N022 見張り台
-↓
-N023 高台への坂
-↓
-N024 城内眺望
-```
+正本ブランチは`main`とします。
 
-## Pannellum
-
-Pannellumは `vendor/pannellum/` から相対パスで読み込みます。CDNに依存しないため、GitHub Pagesでも外部ネットワーク制限の影響を受けにくい構成です。
+GitHub Pagesは以下に統一します。
 
 ```text
-vendor/pannellum/
-  pannellum.css
-  pannellum.js
+Source: Deploy from a branch
+Branch: main
+Folder: / (root)
 ```
 
-## GitHub Pages公開
+`master`は旧運用ブランチです。GitHubのDefault branchとPages Sourceを`main`へ切り替えた後に削除します。
 
-1. このプロジェクト一式をGitHubへpushする
-2. リポジトリの Settings > Pages を開く
-3. Source を `Deploy from a branch` にする
-4. Branch を `main`、Folder を `/root` にする
-5. Saveする
-
-公開URLは以下の形式です。
-
-```text
-https://<user>.github.io/<repo>/
-```
-
-GitHub Pages向けの注意点:
-
-- CSS、JS、画像、Pannellumはすべて相対パスで読み込んでいます。
-- `/assets/...` や `/src/...` のような先頭スラッシュ付きパスは使わないでください。
-- `.nojekyll` を残してください。
-- 本番画像を増やす場合、画像サイズが大きくなりすぎるならGit LFSなどの運用を検討してください。
-
-## 画像と角度調整
-
-現在の24地点は、既存の8枚のプロトタイプパノラマ画像を複数地点で共有しています。本番用の24枚に差し替える場合は、`src/tour-data.js` の各地点の `image` / `thumb` を差し替えてください。
-
-本番パノラマ画像を差し替えた後は、各地点の hotSpot の yaw / pitch / targetYaw / targetPitch を実際の画像に合わせて調整してください。
-
-- `yaw`: 現在地点でホットスポットを表示する左右方向
-- `pitch`: 現在地点でホットスポットを表示する上下方向
-- `targetYaw`: 移動先地点で最初に向く左右方向
-- `targetPitch`: 移動先地点で最初に向く上下方向
-
-詳しい調整手順は [docs/route-design.md](docs/route-design.md) を参照してください。
+大容量の受け渡しZIPはGit管理しません。必要な配布物はGitHub Releases等を使用し、ルートディレクトリへZIPをコミットしない運用とします。
 
 ## ファイル構成
 
 ```text
-yuzuki-sengoku-360/
+360panorama/
+  .github/
+    workflows/
+      validate.yml
   .nojekyll
   index.html
   package.json
@@ -150,6 +99,7 @@ yuzuki-sengoku-360/
     thumbs/
     reference/
   docs/
+    requirements.md
     historical-framing.md
     image-prompts.md
     route-design.md
@@ -158,3 +108,18 @@ yuzuki-sengoku-360/
       pannellum.css
       pannellum.js
 ```
+
+## 画像と角度調整
+
+本番用の24枚へ完全移行する場合は、`src/tour-data.js`の各地点の`image` / `thumb`を差し替え、実画像の向きに合わせてhotSpotの角度を調整します。
+
+- `yaw`: 現在地点でホットスポットを表示する左右方向
+- `pitch`: 現在地点でホットスポットを表示する上下方向
+- `targetYaw`: 移動先地点で最初に向く左右方向
+- `targetPitch`: 移動先地点で最初に向く上下方向
+
+詳しいルート設計は[`docs/route-design.md`](docs/route-design.md)、初期要件は[`docs/requirements.md`](docs/requirements.md)、歴史表現上の前提は[`docs/historical-framing.md`](docs/historical-framing.md)を参照してください。
+
+## Pannellum
+
+Pannellumは`vendor/pannellum/`に固定しており、CDNに依存しません。GitHub Pages上でも相対パスで動作する構成です。
