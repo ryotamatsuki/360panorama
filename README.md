@@ -9,7 +9,7 @@ GitHub Pages: https://ryotamatsuki.github.io/360panorama/
 ## 現在の構成
 
 - 24地点（N001〜N024）のデータ駆動型ツアー
-- Pannellumを`vendor/pannellum/`から読み込む静的構成
+- Pannellumを`assets/pannellum/`から読み込む静的構成
 - HTML / CSS / JavaScriptのみで動作し、ビルド工程は不要
 - GitHub Pagesで公開可能
 - 現在のパノラマ素材は、共通のプロトタイプWebPと地点別PNGが混在する移行段階
@@ -48,8 +48,10 @@ npm run check
 
 Pull Requestと`main`へのpushでは、GitHub Actionsが以下を自動確認します。
 
-- `src/tour-data.js` / `src/app.js` の構文
+- Pannellum本体、`src/tour-data.js`、`src/app.js`のJavaScript構文
 - 必須静的ファイルの存在
+- `index.html`からPannellumの公開用パスを参照していること
+- ローカルHTTPサーバー経由でPannellum JS/CSSを取得できること
 - `tour-data.js`から参照されるパノラマ画像・サムネイルの存在
 
 ## 操作
@@ -95,6 +97,9 @@ Folder: / (root)
     style.css
     tour-data.js
   assets/
+    pannellum/
+      pannellum.css
+      pannellum.js
     panos/
     thumbs/
     reference/
@@ -103,10 +108,6 @@ Folder: / (root)
     historical-framing.md
     image-prompts.md
     route-design.md
-  vendor/
-    pannellum/
-      pannellum.css
-      pannellum.js
 ```
 
 ## 画像と角度調整
@@ -122,4 +123,4 @@ Folder: / (root)
 
 ## Pannellum
 
-Pannellumは`vendor/pannellum/`に固定しており、CDNに依存しません。GitHub Pages上でも相対パスで動作する構成です。
+Pannellumは`assets/pannellum/`に固定しており、CDNに依存しません。GitHub Pagesで配信対象から除外される可能性のあるルート直下の`vendor/`を避け、通常の静的アセットとして配信する構成です。
