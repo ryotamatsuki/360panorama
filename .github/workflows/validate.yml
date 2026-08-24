@@ -36,6 +36,8 @@ jobs:
           grep -q 'window.pannellum=' assets/pannellum/pannellum.js
           grep -q 'assets/pannellum/pannellum.js' index.html
           grep -q 'assets/pannellum/pannellum.css' index.html
+          grep -Fq '.viewer-fallback[hidden]' src/style.css
+          grep -Fq 'display: none !important;' src/style.css
 
       - name: Smoke-test static serving
         run: |
